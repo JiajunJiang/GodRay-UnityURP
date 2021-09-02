@@ -1,0 +1,11 @@
+﻿# 默认忽略的文件
+/shelf/
+/workspace.xml
+# Rider ignored files
+/modules.xml
+/projectSettingsUpdater.xml
+/.idea.GodRay.iml
+/contentModel.xml
+# 数据源本地存储已忽略文件
+/dataSources/
+/dataSources.local.xml
