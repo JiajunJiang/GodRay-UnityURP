@@ -74,8 +74,6 @@ public class GodRayPass : ScriptableRenderPass
         GodRayMaterial.SetFloat("_DepthOutsideDecreaseValue", GodRay.DecreaseValue.value);
         GodRayMaterial.SetFloat("_DepthOutsideDecreaseSpeed", GodRay.DecreaseSpeed.value);
         GodRayMaterial.SetFloat("_DepthOutsideDecreasePower", GodRay.DecreasePower.value);
-        GodRayMaterial.SetColor("_DayLightColorFix", GodRay.DayColor.value);
-        GodRayMaterial.SetColor("_MidNightLightColorFix", GodRay.MidNightColor.value);
         blurStep = GodRay.blurStep.value;
         blurIterations = GodRay.blurIter.value;
 
@@ -90,7 +88,6 @@ public class GodRayPass : ScriptableRenderPass
 
         // LightShaft生成
         cmd.Blit(null, TempBlurBuffer1, GodRayMaterial, 0);
-
 
         for (int i = 0; i < blurStep; i++)
         {

@@ -28,8 +28,6 @@ Shader "God/GodRay"
     float _DepthOutsideDecreaseValue;
     float _DepthOutsideDecreaseSpeed;
     float _DepthOutsideDecreasePower;
-    float4 _DayLightColorFix;
-    float4 _MidNightLightColorFix;
 
     float _Intensity;
 
@@ -52,6 +50,7 @@ Shader "God/GodRay"
         return output;
     }
 
+    //这里之后可以用一张噪声贴图代替 节约性能
     float GetRandomNumber(float2 texCoord, int Seed)
     {
         return frac(sin(dot(texCoord.xy, float2(12.9898, 78.233)) + Seed) * 43758.5453);
@@ -59,26 +58,21 @@ Shader "God/GodRay"
 
     half4 SimpleRaymarching(float3 rayOrigin, float3 rayDirection, float depth)
     {
-        //【初始化我们的颜色结果】
         half4 result = float4(_MainLightColor.xyz, 1) * _Intensity;
         
-        //【定义光追步长】
         float step = _MaxDistance / _MaxIterations;
-        //【定义光追step】
         float t = _MinDistance + step * GetRandomNumber(rayDirection, _Time.y * 100);
-        // float t = _MinDistance;
         float alpha = 0;
 
         for (int i = 0; i < _MaxIterations; i++)
         {
-            //【超出最大范围】
             if (t > _MaxDistance || t >= depth)
             {
                 break;
             }
-            //【当前点与物体的距离】
+            //当前点与物体的距离
             float3 p = rayOrigin + rayDirection * t;
-            //【阴影没有体积光】
+            //阴影没有体积光
             float4 shadowCoord = TransformWorldToShadowCoord(p);
             float shadow = SAMPLE_TEXTURE2D_SHADOW(_MainLightShadowmapTexture, sampler_MainLightShadowmapTexture, shadowCoord);
             if (shadow >= 1)
@@ -117,8 +111,7 @@ Shader "God/GodRay"
         half4 color = SAMPLE_TEXTURE2D_X(_MainTex, sampler_LinearClamp, input.uv);
         half4 shaft = SAMPLE_TEXTURE2D_X(_LightShaftTempTex, sampler_LinearClamp, input.uv);
         Light mainLight = GetMainLight();
-        half4 LightColorFix = lerp(_MidNightLightColorFix, _DayLightColorFix, saturate(mainLight.direction.y * 3));
-        LightColorFix = lerp(float4(0.0, 0.0, 0.0, 0.0), LightColorFix, saturate(mainLight.direction.y * 6 + 1));
+        half4 LightColorFix = lerp(float4(0.0, 0.0, 0.0, 0.0), float4(1.0, 1.0, 10, 1.0), saturate(mainLight.direction.y * 6 + 1));
 
         color.rgb = lerp(color.rgb, shaft.rgb * LightColorFix.rgb, shaft.a * LightColorFix.a);
         
